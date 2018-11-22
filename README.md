@@ -1,0 +1,2 @@
+# autosniper
+Autosniper

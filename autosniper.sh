@@ -75,16 +75,21 @@ do
 
         len=${#tradeIds[*]}
 
-        echo "Trying to buy the card ${tradeIds[$len-1]} for $price coins"
-        echo $(sendOptionReq ${tradeIds[$len-1]})
-        response=$(sendBidReq ${tradeIds[$len-1]})
-        echo $response
+        for i in "${tradeIds[@]}"
+        do
+            echo "Trying to buy the card $i for $price coins"
+            echo $(sendOptionReq $i)
+            response=$(sendBidReq $i)
+            echo $response
+        done
+
+
 
     fi
 
     round=$((round + 1))
 
-    sleeper=$(( ( RANDOM % 13 )  + 7 ))
+    sleeper=$(( ( RANDOM % 20 )  + 10 ))
     echo "Round finished sleeping $sleeper seconds."
     sleep $sleeper
 done

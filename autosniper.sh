@@ -38,6 +38,12 @@ function sendBidReq() {
 
 }
 
+#function sendToTransferlist() {
+    #curl 'https://utas.external.s2.fut.ea.com/ut/game/fifa19/item' -X PUT -H 'Accept: text/plain, */*; q=0.01' -H "X-UT-SID: $sid" -H 'Easw-Session-Data-Nucleus-Id: 2370625520' -H 'Origin: https://www.easports.com' -H 'Referer: https://www.easports.com/fifa/ultimate-team/web-app/' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36' -H 'Content-Type: application/json' --data-binary "{\"itemData\":[{\"id\":$1,\"pile\":\"trade\"}]}" --compressed
+    #curl 'https://utas.external.s2.fut.ea.com/ut/game/fifa19/auctionhouse' -X OPTIONS -H 'Access-Control-Request-Method: POST' -H 'Origin: https://www.easports.com' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36' -H 'Access-Control-Request-Headers: content-type,x-ut-sid' --compressed
+    #curl 'https://utas.external.s2.fut.ea.com/ut/game/fifa19/auctionhouse' -H 'X-UT-SID: $sid' -H 'Referer: https://www.easports.com/fifa/ultimate-team/web-app/' -H 'Origin: https://www.easports.com' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36' -H 'Content-Type: application/json' --data-binary "{\"itemData\":{\"id\":$1},\"startingBid\":$2,\"duration\":3600,\"buyNowPrice\":$3}" --compressed
+#}
+
 while [ 1 ]
 do
     if ! ((round % 2)); then
@@ -84,7 +90,7 @@ do
 
     round=$((round + 1))
 
-    sleeper=$(( ( RANDOM % 13 )  + 7 ))
+    sleeper=$(( ( RANDOM % 30 )  + 10 ))
     echo "Round finished sleeping $sleeper seconds."
     sleep $sleeper
 done

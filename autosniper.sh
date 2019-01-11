@@ -84,12 +84,14 @@ do
         echo ${tradeIds[@]}
 
         len=${#tradeIds[*]}
+        bidTimer=0
 
         if [[ "$type" == 'fitness' && "$maskedDefId" == 'bid' ]]; then
 
+            let bidTimer = 20
             COUNTER=$len
-            until [[  $COUNTER -lt 1 ]]; do
-                sleep 3
+            until [[  $COUNTER -lt 15 ]]; do
+                sleep 4
                 echo "Trying to buy the card ${tradeIds[$COUNTER-1]} for $price coins"
                 echo $(sendOptionReq ${tradeIds[$COUNTER-1]})
                 response=$(sendBidReq ${tradeIds[$COUNTER-1]})
@@ -108,7 +110,7 @@ do
 
     round=$((round + 1))
 
-    sleeper=$(( ( RANDOM % 20 )  + 10 ))
+    sleeper=$(( ( RANDOM % (20 + $bidTimer) )  + 10 ))
     echo "Round finished sleeping $sleeper seconds."
     sleep $sleeper
 done

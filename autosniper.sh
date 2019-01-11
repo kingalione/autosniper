@@ -58,9 +58,13 @@ do
         #check for Special-P
         url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=player&maskedDefId=$maskedDefId&rare=SP&maxb=$price&_=$milli"
     elif [[ "$type" == 'fitness' ]]; then
-        #check for FC
-        url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=development&definitionId=5002006&maxb=$price&_=$milli"
-    elif [[ "$type" == 'chemistry' ]]; then
+        if [[ "$maskedDefId" == 'bid' ]]; then
+            url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=development&definitionId=5002006&micr=150&macr=250&_=$milli"
+        else
+            #check for FC
+            url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=development&definitionId=5002006&maxb=$price&_=$milli"
+        fi
+     elif [[ "$type" == 'chemistry' ]]; then
         if [[ "$maskedDefId" == 'hunter' ]]; then
             url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=training&cat=playStyle&playStyle=266&maxb=$price&_=$milli"
         else
@@ -81,10 +85,24 @@ do
 
         len=${#tradeIds[*]}
 
-        echo "Trying to buy the card ${tradeIds[$len-1]} for $price coins"
-        echo $(sendOptionReq ${tradeIds[$len-1]})
-        response=$(sendBidReq ${tradeIds[$len-1]})
-        echo $response
+        if [[ "$type" == 'fitness' && "$maskedDefId" == 'bid' ]]; then
+
+            COUNTER=$len
+            until [[  $COUNTER -lt 1 ]]; do
+                sleep 3
+                echo "Trying to buy the card ${tradeIds[$COUNTER-1]} for $price coins"
+                echo $(sendOptionReq ${tradeIds[$COUNTER-1]})
+                response=$(sendBidReq ${tradeIds[$COUNTER-1]})
+                echo $response
+                let COUNTER-=1
+            done
+
+        else
+            echo "Trying to buy the card ${tradeIds[$len-1]} for $price coins"
+            echo $(sendOptionReq ${tradeIds[$len-1]})
+            response=$(sendBidReq ${tradeIds[$len-1]})
+            echo $response
+        fi
 
     fi
 

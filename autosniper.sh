@@ -76,6 +76,7 @@ do
     fi
 
     tradeIds=($(getTradeIds $url))
+    bidTimer=0
 
     if [[ ${#tradeIds[@]} -eq 0 ]]; then
         echo "No cards found for $price coins."
@@ -84,13 +85,12 @@ do
         echo ${tradeIds[@]}
 
         len=${#tradeIds[*]}
-        bidTimer=0
 
         if [[ "$type" == 'fitness' && "$maskedDefId" == 'bid' ]]; then
 
-            let bidTimer = 20
+            bidTimer=20
             COUNTER=$len
-            until [[  $COUNTER -lt 15 ]]; do
+            until [[  $COUNTER -lt 17 ]]; do
                 sleep 4
                 echo "Trying to buy the card ${tradeIds[$COUNTER-1]} for $price coins"
                 echo $(sendOptionReq ${tradeIds[$COUNTER-1]})

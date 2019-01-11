@@ -60,6 +60,12 @@ do
     elif [[ "$type" == 'fitness' ]]; then
         #check for FC
         url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=development&definitionId=5002006&maxb=$price&_=$milli"
+    elif [[ "$type" == 'chemistry' ]]; then
+        if [[ "$maskedDefId" == 'hunter' ]]; then
+            url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=training&cat=playStyle&playStyle=266&maxb=$price&_=$milli"
+        else
+            url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=training&cat=playStyle&playStyle=268&maxb=$price&_=$milli"
+        fi
     else
         echo "No card type given. Exiting application."
         break
@@ -84,7 +90,7 @@ do
 
     round=$((round + 1))
 
-    sleeper=$(( ( RANDOM % 13 )  + 7 ))
+    sleeper=$(( ( RANDOM % 20 )  + 10 ))
     echo "Round finished sleeping $sleeper seconds."
     sleep $sleeper
 done

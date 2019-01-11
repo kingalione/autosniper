@@ -58,8 +58,18 @@ do
         #check for Special-P
         url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=player&maskedDefId=$maskedDefId&rare=SP&maxb=$price&_=$milli"
     elif [[ "$type" == 'fitness' ]]; then
-        #check for FC
-        url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=development&definitionId=5002006&maxb=$price&_=$milli"
+        if [[ "$maskedDefId" == 'bid' ]]; then
+            url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=development&definitionId=5002006&micr=150&macr=250&_=$milli"
+        else
+            #check for FC
+            url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=development&definitionId=5002006&maxb=$price&_=$milli"
+        fi
+     elif [[ "$type" == 'chemistry' ]]; then
+        if [[ "$maskedDefId" == 'hunter' ]]; then
+            url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=training&cat=playStyle&playStyle=266&maxb=$price&_=$milli"
+        else
+            url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=training&cat=playStyle&playStyle=268&maxb=$price&_=$milli"
+        fi
     else
         echo "No card type given. Exiting application."
         break
@@ -74,22 +84,33 @@ do
         echo ${tradeIds[@]}
 
         len=${#tradeIds[*]}
+        bidTimer=0
 
-        for i in "${tradeIds[@]}"
-        do
-            echo "Trying to buy the card $i for $price coins"
-            echo $(sendOptionReq $i)
-            response=$(sendBidReq $i)
+        if [[ "$type" == 'fitness' && "$maskedDefId" == 'bid' ]]; then
+
+            let bidTimer = 20
+            COUNTER=$len
+            until [[  $COUNTER -lt 15 ]]; do
+                sleep 4
+                echo "Trying to buy the card ${tradeIds[$COUNTER-1]} for $price coins"
+                echo $(sendOptionReq ${tradeIds[$COUNTER-1]})
+                response=$(sendBidReq ${tradeIds[$COUNTER-1]})
+                echo $response
+                let COUNTER-=1
+            done
+
+        else
+            echo "Trying to buy the card ${tradeIds[$len-1]} for $price coins"
+            echo $(sendOptionReq ${tradeIds[$len-1]})
+            response=$(sendBidReq ${tradeIds[$len-1]})
             echo $response
-        done
-
-
+        fi
 
     fi
 
     round=$((round + 1))
 
-    sleeper=$(( ( RANDOM % 20 )  + 10 ))
+    sleeper=$(( ( RANDOM % (20 + $bidTimer) )  + 10 ))
     echo "Round finished sleeping $sleeper seconds."
     sleep $sleeper
 done

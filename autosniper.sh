@@ -39,13 +39,19 @@ function sendBidReq() {
 }
 
 function sendToActionHouse() {
-    echo "Sending fitnesscard to autionhouse"
-    curl 'https://utas.external.s2.fut.ea.com/ut/game/fifa19/item/resource' -X PUT -H 'Accept: text/plain, */*; q=0.01' -H "X-UT-SID: $sid" -H 'Easw-Session-Data-Nucleus-Id: 2370625520' -H 'Origin: https://www.easports.com' -H 'Referer: https://www.easports.com/de/fifa/ultimate-team/web-app/' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36' -H 'Content-Type: application/json' --data-binary '{"itemData":[{"id":5002006,"pile":"trade"}]}' --compressed | jq -r '.itemData[].id'
+    curl -s 'https://utas.external.s2.fut.ea.com/ut/game/fifa19/item/resource' -X PUT -H 'Accept: text/plain, */*; q=0.01' -H "X-UT-SID: $sid" -H 'Easw-Session-Data-Nucleus-Id: 2370625520' -H 'Origin: https://www.easports.com' -H 'Referer: https://www.easports.com/de/fifa/ultimate-team/web-app/' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36' -H 'Content-Type: application/json' --data-binary '{"itemData":[{"id":5002006,"pile":"trade"}]}' --compressed | jq -r '.itemData[].id'
 }
 
 function offerCard() {
-    echo "Offering card: $1 with startPrice $2 and buyNowPrice $2"
-    curl 'https://utas.external.s2.fut.ea.com/ut/game/fifa19/auctionhouse' -H "X-UT-SID: $sid" -H 'Referer: https://www.easports.com/de/fifa/ultimate-team/web-app/' -H 'Origin: https://www.easports.com' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36' -H 'Content-Type: application/json' --data-binary "{\"itemData\":{\"id\":$1},\"startingBid\":$2,\"duration\":3600,\"buyNowPrice\":$3}"--compressed
+    echo "Offering card: $1 with startPrice $2 and buyNowPrice $3"
+    curl -s 'https://utas.external.s2.fut.ea.com/ut/game/fifa19/auctionhouse' -H "X-UT-SID: $sid" -H 'Referer: https://www.easports.com/de/fifa/ultimate-team/web-app/' -H 'Origin: https://www.easports.com' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36' -H 'Content-Type: application/json' --data-binary "{\"itemData\":{\"id\":$1},\"startingBid\":$2,\"duration\":3600,\"buyNowPrice\":$3}"--compressed
+}
+
+function sellFitnessCard() {
+    sleep 5
+    offerId=$(sendToActionHouse)
+    sleep 5
+    offerCard "$offerId" 700 750
 }
 
 while [ 1 ]
@@ -125,6 +131,7 @@ do
     echo "Round finished sleeping $sleeper seconds."
     sleep $sleeper
 
-    offerId=$(sendToActionHouse)
-    echo $(offerCard offerId 1000 1100)
+    sellFitnessCard
+    sellFitnessCard
+    sellFitnessCard
 done

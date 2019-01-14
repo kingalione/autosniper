@@ -51,7 +51,7 @@ function sellFitnessCard() {
     sleep 5
     offerId=$(sendToActionHouse)
     sleep 5
-    offerCard "$offerId" 700 750
+    offerCard "$offerId" 1000 1100
 }
 
 while [ 1 ]
@@ -74,7 +74,8 @@ do
         url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=player&maskedDefId=$maskedDefId&rare=SP&maxb=$price&_=$milli"
     elif [[ "$type" == 'fitness' ]]; then
         if [[ "$maskedDefId" == 'bid' ]]; then
-            url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=development&definitionId=5002006&micr=150&macr=250&_=$milli"
+            maxBid=$((price - 50))
+            url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=development&definitionId=5002006&macr=$maxBid&_=$milli"
         else
             #check for FC
             url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=development&definitionId=5002006&maxb=$price&_=$milli"
@@ -108,7 +109,7 @@ do
             bidTimer=30
             COUNTER=$len
             until [[  $COUNTER -lt 17 ]]; do
-                sleep 7
+                sleep 1
                 echo "Trying to buy the card ${tradeIds[$COUNTER-1]} for $price coins"
                 echo $(sendOptionReq ${tradeIds[$COUNTER-1]})
                 response=$(sendBidReq ${tradeIds[$COUNTER-1]})
@@ -127,11 +128,9 @@ do
 
     round=$((round + 1))
 
-    sleeper=$(( ( RANDOM % (20 + $bidTimer) )  + (10 + (bidTimer / 3)) ))
+    sleeper=$(( ( RANDOM % (30 + $bidTimer) )  + (15 + (bidTimer / 3)) ))
     echo "Round finished sleeping $sleeper seconds."
     sleep $sleeper
 
-    sellFitnessCard
-    sellFitnessCard
-    sellFitnessCard
+    #sellFitnessCard
 done

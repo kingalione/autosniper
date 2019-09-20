@@ -98,6 +98,7 @@ do
 
     if [[ ${#tradeIds[@]} -eq 0 ]]; then
         echo "No cards found for $price coins."
+        bidTimer=0
     else
         echo "Cards found: "
         echo ${tradeIds[@]}

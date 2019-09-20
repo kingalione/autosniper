@@ -38,6 +38,22 @@ function sendBidReq() {
 
 }
 
+function sendToActionHouse() {
+    curl -s 'https://utas.external.s2.fut.ea.com/ut/game/fifa19/item/resource' -X PUT -H 'Accept: text/plain, */*; q=0.01' -H "X-UT-SID: $sid" -H 'Easw-Session-Data-Nucleus-Id: 2370625520' -H 'Origin: https://www.easports.com' -H 'Referer: https://www.easports.com/de/fifa/ultimate-team/web-app/' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36' -H 'Content-Type: application/json' --data-binary '{"itemData":[{"id":5002006,"pile":"trade"}]}' --compressed | jq -r '.itemData[].id'
+}
+
+function offerCard() {
+    echo "Offering card: $1 with startPrice $2 and buyNowPrice $3"
+    curl -s 'https://utas.external.s2.fut.ea.com/ut/game/fifa19/auctionhouse' -H "X-UT-SID: $sid" -H 'Referer: https://www.easports.com/de/fifa/ultimate-team/web-app/' -H 'Origin: https://www.easports.com' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36' -H 'Content-Type: application/json' --data-binary "{\"itemData\":{\"id\":$1},\"startingBid\":$2,\"duration\":3600,\"buyNowPrice\":$3}"--compressed
+}
+
+function sellFitnessCard() {
+    sleep 5
+    offerId=$(sendToActionHouse)
+    sleep 5
+    offerCard "$offerId" 1000 1100
+}
+
 while [ 1 ]
 do
     if ! ((round % 2)); then
@@ -50,7 +66,6 @@ do
 
     milli=$(getMilliSeconds)
 
-
     if [[ "$type" == 'gold' ]]; then
         #check for GOLD-P
         url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=player&maskedDefId=$maskedDefId&lev=gold&maxb=$price&_=$milli"
@@ -59,11 +74,14 @@ do
         url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=player&maskedDefId=$maskedDefId&rare=SP&maxb=$price&_=$milli"
     elif [[ "$type" == 'fitness' ]]; then
         if [[ "$maskedDefId" == 'bid' ]]; then
-            url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=development&definitionId=5002006&micr=150&macr=250&_=$milli"
+            maxBid=$((price - 50))
+            url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=development&definitionId=5002006&macr=$maxBid&_=$milli"
         else
             #check for FC
             url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=development&definitionId=5002006&maxb=$price&_=$milli"
         fi
+     elif [[ "$type" == 'position' && "$maskedDefId" == 'ZOM>>MS' ]]; then
+        url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=training&cat=position&pos=CAM-CF&maxb=$price&_=$milli"
      elif [[ "$type" == 'chemistry' ]]; then
         if [[ "$maskedDefId" == 'hunter' ]]; then
             url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=training&cat=playStyle&playStyle=266&maxb=$price&_=$milli"
@@ -76,22 +94,23 @@ do
     fi
 
     tradeIds=($(getTradeIds $url))
+    bidTimer=0
 
     if [[ ${#tradeIds[@]} -eq 0 ]]; then
         echo "No cards found for $price coins."
+        bidTimer=0
     else
         echo "Cards found: "
         echo ${tradeIds[@]}
 
         len=${#tradeIds[*]}
-        bidTimer=0
 
         if [[ "$type" == 'fitness' && "$maskedDefId" == 'bid' ]]; then
 
-            let bidTimer = 20
+            bidTimer=30
             COUNTER=$len
-            until [[  $COUNTER -lt 15 ]]; do
-                sleep 4
+            until [[  $COUNTER -lt 17 ]]; do
+                sleep 1
                 echo "Trying to buy the card ${tradeIds[$COUNTER-1]} for $price coins"
                 echo $(sendOptionReq ${tradeIds[$COUNTER-1]})
                 response=$(sendBidReq ${tradeIds[$COUNTER-1]})
@@ -110,7 +129,9 @@ do
 
     round=$((round + 1))
 
-    sleeper=$(( ( RANDOM % (20 + $bidTimer) )  + 10 ))
+    sleeper=$(( ( RANDOM % (30 + $bidTimer) )  + (15 + (bidTimer / 3)) ))
     echo "Round finished sleeping $sleeper seconds."
     sleep $sleeper
+
+    #sellFitnessCard
 done

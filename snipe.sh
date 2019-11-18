@@ -16,9 +16,17 @@ function getTradeIds() {
   curl -s $1 -H 'Connection: keep-alive' -H "X-UT-SID: $sid" -H 'Origin: https://www.easports.com' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36' -H 'Content-Type: application/json' -H 'Accept: */*' -H 'Sec-Fetch-Site: cross-site' -H 'Sec-Fetch-Mode: cors' -H 'Referer: https://www.easports.com/fifa/ultimate-team/web-app/' -H 'Accept-Encoding: gzip, deflate, br' -H 'Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7' --compressed | jq -r '.auctionInfo[].tradeId'
 }
 
+function sendOptionReq() {
+  # curl 'https://utas.external.s2.fut.ea.com/ut/game/fifa20/trade/$1/bid' -X OPTIONS -H 'Connection: keep-alive' -H 'Access-Control-Request-Method: PUT' -H 'Origin: https://www.easports.com' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36' -H 'Access-Control-Request-Headers: content-type,x-ut-sid' -H 'Accept: */*' -H 'Sec-Fetch-Site: cross-site' -H 'Sec-Fetch-Mode: cors' -H 'Referer: https://www.easports.com/fifa/ultimate-team/web-app/' -H 'Accept-Encoding: gzip, deflate, br' -H 'Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7' --compressed
+    curl "https://utas.external.s2.fut.ea.com/ut/game/fifa20/trade/$1/bid" -X OPTIONS -H 'Connection: keep-alive' -H 'Access-Control-Request-Method: PUT' -H 'Origin: https://www.easports.com' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36' -H 'Access-Control-Request-Headers: content-type,x-ut-sid' -H 'Accept: */*' -H 'Sec-Fetch-Site: cross-site' -H 'Sec-Fetch-Mode: cors' -H 'Referer: https://www.easports.com/fifa/ultimate-team/web-app/' -H 'Accept-Encoding: gzip, deflate, br' -H 'Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7' --compressed
+}
+
+
 function sendBuyReq() {
-  curl -s "https://utas.external.s2.fut.ea.com/ut/game/fifa20/trade/$1/bid" -X OPTIONS -H 'Connection: keep-alive' -H 'Access-Control-Request-Method: PUT' -H 'Origin: https://www.easports.com' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36' -H 'Access-Control-Request-Headers: content-type,x-ut-sid' -H 'Accept: */*' -H 'Sec-Fetch-Site: cross-site' -H 'Sec-Fetch-Mode: cors' -H 'Referer: https://www.easports.com/fifa/ultimate-team/web-app/' -H 'Accept-Encoding: gzip, deflate, br' -H 'Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7' --compressed
-  curl -s "https://utas.external.s2.fut.ea.com/ut/game/fifa20/trade/$1/bid" -X PUT -H 'Connection: keep-alive' -H "X-UT-SID: $sid" -H 'Origin: https://www.easports.com' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36' -H 'Content-Type: application/json' -H 'Accept: */*' -H 'Sec-Fetch-Site: cross-site' -H 'Sec-Fetch-Mode: cors' -H 'Referer: https://www.easports.com/fifa/ultimate-team/web-app/' -H 'Accept-Encoding: gzip, deflate, br' -H 'Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7' --data-binary "{\"bid\":$price}" --compressed
+  # curl 'https://utas.external.s2.fut.ea.com/ut/game/fifa20/trade/$1/bid' -X PUT -H 'Connection: keep-alive' -H 'X-UT-SID: $sid' -H 'Origin: https://www.easports.com' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36' -H 'Content-Type: application/json' -H 'Accept: */*' -H 'Sec-Fetch-Site: cross-site' -H 'Sec-Fetch-Mode: cors' -H 'Referer: https://www.easports.com/fifa/ultimate-team/web-app/' -H 'Accept-Encoding: gzip, deflate, br' -H 'Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7' --data-binary '{"bid":200}' --compressed
+    curl "https://utas.external.s2.fut.ea.com/ut/game/fifa20/trade/$1/bid" -X PUT -H 'Connection: keep-alive' -H "X-UT-SID: $sid" -H 'Origin: https://www.easports.com' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36' -H 'Content-Type: application/json' -H 'Accept: */*' -H 'Sec-Fetch-Site: cross-site' -H 'Sec-Fetch-Mode: cors' -H 'Referer: https://www.easports.com/fifa/ultimate-team/web-app/' -H 'Accept-Encoding: gzip, deflate, br' -H 'Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7' --data-binary "{\"bid\":$price}" --compressed
+  
+  #echo "curl 'https://utas.external.s2.fut.ea.com/ut/game/fifa20/trade/$1/bid' -X PUT -H 'Connection: keep-alive' -H 'X-UT-SID: $sid' -H 'Origin: https://www.easports.com' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36' -H 'Content-Type: application/json' -H 'Accept: */*' -H 'Sec-Fetch-Site: cross-site' -H 'Sec-Fetch-Mode: cors' -H 'Referer: https://www.easports.com/fifa/ultimate-team/web-app/' -H 'Accept-Encoding: gzip, deflate, br' -H 'Accept-Language: de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7' --data-binary '{\"bid\":$price}' --compressed"
 }
 
 while [ 1 ]
@@ -31,10 +39,7 @@ do
 
   echo "Suche nach der Karte $maskedDefId für $price coins. Runde: $round"
 
-  if [[ "$quality" == 'gold' ]]; then
-  elif [[ "$quality" == 'holland_defense' ]]; then
-
-  url "https://utas.external.s2.fut.ea.com/ut/game/fifa20/transfermarket?start=0&num=21&type=player&maskedDefId=$maskedDefId&lev=$quality"
+  url="https://utas.external.s2.fut.ea.com/ut/game/fifa20/transfermarket?start=0&num=21&type=player&maskedDefId=$maskedDefId&lev=$quality"
 
   tradeIds=($(getTradeIds $url))
   bidTimer=0
@@ -55,7 +60,7 @@ do
 
   round=$((round + 1))
 
-  sleeper=$(( ( RANDOM % (30 + $bidTimer) )  + (15 + (bidTimer / 3)) ))
+  sleeper=$(( ( RANDOM % (30 + $bidTimer) )  + (15 + ($bidTimer / 3)) ))
   echo "Runde beendet. Schlafe $sleeper Sekunden."
   sleep $sleeper
 done

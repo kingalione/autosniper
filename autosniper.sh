@@ -5,6 +5,7 @@ maskedDefId=$2
 price=$3
 priceRange=$4
 sid=$5
+bidOption=$6
 
 function getMilliSeconds() {
   node -e 'console.log(Date.now())'
@@ -69,6 +70,10 @@ do
     if [[ "$type" == 'gold' ]]; then
         #check for GOLD-P
         url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=player&maskedDefId=$maskedDefId&lev=gold&maxb=$price&_=$milli"
+    elif [[ "$type" == 'holland_defense' ]]; then
+        url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=player&zone=defense&lev=gold&leag=10&maxb=$price&_=$milli"
+    elif [[ "$type" == 'special_only' ]]; then
+        url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=player&rare=SP&maxb=$price&_=$milli"
     elif [[ "$type" == 'special' ]]; then
         #check for Special-P
         url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=player&maskedDefId=$maskedDefId&rare=SP&maxb=$price&_=$milli"
@@ -83,8 +88,11 @@ do
      elif [[ "$type" == 'position' && "$maskedDefId" == 'ZOM>>MS' ]]; then
         url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=training&cat=position&pos=CAM-CF&maxb=$price&_=$milli"
      elif [[ "$type" == 'chemistry' ]]; then
-        if [[ "$maskedDefId" == 'hunter' ]]; then
-            url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=training&cat=playStyle&playStyle=266&maxb=$price&_=$milli"
+        if [[ "$maskedDefId" == 'hunter' && "$bidOption" == 'bid' ]]; then
+          maxBid=$((price - 50))
+          url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=training&cat=playStyle&playStyle=266&macr=$maxBid&_=$milli"
+        elif [[ "$maskedDefId" == 'hunter' ]]; then
+          url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=training&cat=playStyle&playStyle=266&maxb=$price&_=$milli"
         else
             url="https://utas.external.s2.fut.ea.com/ut/game/fifa19/transfermarket?start=0&num=21&type=training&cat=playStyle&playStyle=268&maxb=$price&_=$milli"
         fi
@@ -98,7 +106,6 @@ do
 
     if [[ ${#tradeIds[@]} -eq 0 ]]; then
         echo "No cards found for $price coins."
-        bidTimer=0
     else
         echo "Cards found: "
         echo ${tradeIds[@]}
@@ -110,14 +117,25 @@ do
             bidTimer=30
             COUNTER=$len
             until [[  $COUNTER -lt 17 ]]; do
-                sleep 1
+                sleep 2
                 echo "Trying to buy the card ${tradeIds[$COUNTER-1]} for $price coins"
                 echo $(sendOptionReq ${tradeIds[$COUNTER-1]})
                 response=$(sendBidReq ${tradeIds[$COUNTER-1]})
                 echo $response
                 let COUNTER-=1
             done
+        elif [[ "$type" == 'chemistry' && "$bidOption" == 'bid' ]]; then
 
+            bidTimer=30
+            COUNTER=$len
+            until [[  $COUNTER -lt 17 ]]; do
+                sleep 2
+                echo "Trying to buy the card ${tradeIds[$COUNTER-1]} for $price coins"
+                echo $(sendOptionReq ${tradeIds[$COUNTER-1]})
+                response=$(sendBidReq ${tradeIds[$COUNTER-1]})
+                echo $response
+                let COUNTER-=1
+            done
         else
             echo "Trying to buy the card ${tradeIds[$len-1]} for $price coins"
             echo $(sendOptionReq ${tradeIds[$len-1]})
